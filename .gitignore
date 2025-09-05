@@ -1,0 +1,17 @@
+# Ignore virtual environment
+venv/
+venv_old/
+
+# Ignore all images
+*.png
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore temp and log files
+*.log
+*.tmp
+*.swp
