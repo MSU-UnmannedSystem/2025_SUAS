@@ -8,10 +8,7 @@ It uses drontekit to talk to the Cube controller and image recognition using YOL
 ### Dependancies
 
 - Python 3.6 (dronekit)
-- python 3.11 (all other stuff)
+- Python 3.11 (all other stuff)
 - dronekit
 - opencv-python
 - ultralytics
-- numpy==1.26.4
-- sockets
-- tflite-runtime
