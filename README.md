@@ -12,3 +12,8 @@ It uses drontekit to talk to the Cube controller and YOLO for image recognition.
 - dronekit
 - opencv-python
 - ultralytics
+
+### Useful doc for training
+- https://docs.ultralytics.com/guides/nvidia-jetson/#install-pytorch-and-torchvision_1
+- https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+- https://elinux.org/Jetson_Zoo#ONNX_Runtime
