@@ -15,16 +15,16 @@ E.g. If there are 1000 .png files in **/image**, there should also be 1000 .txt 
 
 ### Folder structure
 
-                  - train  - images
+                 |  train |  images
                  |        |
-                 |         - labels
+                 |        |  labels
                  |         
-trainingn root   -  val    - images
+trainingn root   |  val   |  images
                  |        |
-                 |         - labels         
+                 |        |  labels         
                  |
-                  - test   - images
+                 | test   |  images
                           |
-                           - labels
+                          |  labels
 
 If any changes to path are made, update the corresponding part in data.yaml.
