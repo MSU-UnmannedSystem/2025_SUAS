@@ -23,7 +23,7 @@ E.g. If there are 1000 .png files in **/image**, there should also be 1000 .txt 
 
 ### Folder structure
 
-If any changes to path are made, update the corresponding part in data.yaml.
+If any changes to path are made, update the corresponding part in **/data.yaml**.
 
 ```
                 |  train  |  images
