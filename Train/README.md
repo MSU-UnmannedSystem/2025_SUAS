@@ -26,15 +26,15 @@ E.g. If there are 1000 .png files in **/image**, there should also be 1000 .txt 
 If any changes to path are made, update the corresponding part in data.yaml.
 
 ```
-                 |  train  |  images
-                 |         |
-                 |         |  labels
-                 |         
-trainingn root   |  val    |  images
-                 |         |
-                 |         |  labels         
-                 |
-                 |  test   |  images
-                           |
-                           |  labels
+                |  train  |  images
+                |         |
+                |         |  labels
+                |         
+training root   |  val    |  images
+                |         |
+                |         |  labels         
+                |
+                |  test   |  images
+                          |
+                          |  labels
 ```
