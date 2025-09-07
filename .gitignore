@@ -4,6 +4,15 @@ venv_old/
 
 # Ignore all images
 *.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.webp
+*.heic
+*.svg
 
 # Ignore Python cache files
 __pycache__/
