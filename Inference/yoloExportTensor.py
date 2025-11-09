@@ -1,10 +1,10 @@
 from ultralytics import YOLO
 
-# Load a YOLO11n PyTorch model
+# Load a YOLO PyTorch model
 model = YOLO("yolo11m.pt")
 
 # Export the model to TensorRT
-model.export(format="engine")  # creates 'yolo11n.engine'
+model.export(format="engine")
 
 # Load the exported TensorRT model
 trt_model = YOLO("yolo11m.engine")

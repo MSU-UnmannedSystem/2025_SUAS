@@ -1,6 +1,5 @@
 import time
 import cv2
-import socket
 from ultralytics import YOLO
 
 # Camera object that will init later
@@ -29,7 +28,7 @@ def main():
     # model = YOLO("model/yolov9t.pt")
     
     # Load model using Coral Accelerator
-    model = YOLO("yolo11s.engine", task="detect")
+    model = YOLO("yolo11m.engine", task="detect")
        
     print("\nStatus:\tModel Loaded")
 
