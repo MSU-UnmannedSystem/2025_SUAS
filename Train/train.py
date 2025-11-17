@@ -9,7 +9,7 @@ def main():
     torch.cuda.set_device("cpu")
 
     model = ultralytics.YOLO("yolo11m.pt")
-    model.train(data="data.yaml", pretrained = True, epochs=10, imgsz=640)
+    model.train(data="data.yaml", pretrained = True, epochs=25, imgsz=640)
     model.val()
 
 if __name__ == "__main__":
