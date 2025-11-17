@@ -8,7 +8,7 @@ def main():
     # Use pure CPU
     torch.cuda.set_device("cpu")
 
-    model = ultralytics.YOLO("path_to_pretrained_model")
+    model = ultralytics.YOLO("yolo11m.pt")
     model.train(data="data.yaml", pretrained = True, epochs=10, imgsz=640)
     model.val()
 
