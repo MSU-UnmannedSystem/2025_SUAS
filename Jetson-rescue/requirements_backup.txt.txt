@@ -1,0 +1,12 @@
+# Core ML Frameworks (Linux AArch64 / Jetson)
+torch==2.3.0
+torchvision==0.18.0a0+6043bc2
+
+# Inference Engines (GPU Optimized)
+onnxruntime-gpu==1.19.0
+onnxruntime-gpu==1.18.0
+onnxruntime-gpu==1.17.0
+
+# Note: The folder also contained these model weights (already rescued):
+# yolo11m.pt, yolo11s.pt, yolo11n.pt
+# yolo11m.onnx, yolo11s.onnx, yolo11n.onnx
