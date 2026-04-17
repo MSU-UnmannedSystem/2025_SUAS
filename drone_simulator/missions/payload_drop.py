@@ -7,14 +7,17 @@ from vehicle.modes import change_mode
 # Import your completed engines
 from geolocation import TargetGeolocator
 from camera import VisionPipeline
+from Logger import TelemetryLogger # <-- ADDED THIS
 
 class PayloadDropMission(MissionBase):
     def __init__(self, master, config):
         super().__init__(master, config)
-        # 1. Initialize your math engine (adjust FOV to your exact webcam specs)
+        # 1. Initialize your math engine (adjust FOV to your exact webcam specs later)
         self.geolocator = TargetGeolocator(res_w=1920, res_h=1080, hfov_deg=78.0, vfov_deg=43.0)
         # 2. Initialize the vision pipeline
         self.vision = VisionPipeline(camera_index=0)
+        # 3. Initialize the logger <-- ADDED THIS
+        self.logger = TelemetryLogger()
 
     def execute(self):
         print("[PAYLOAD DROP] Taking control. Switching to GUIDED mode.")
@@ -54,14 +57,17 @@ class PayloadDropMission(MissionBase):
                 
                 print(f"[PAYLOAD DROP] Math Engine Output: Flying to Lat {t_lat:.6f}, Lon {t_lon:.6f}")
 
-                # 4. Command the drone to fly to the calculated target
+                # 4. Save the data to memory <-- ADDED THIS
+                self.logger.log_data(current_lat, current_lon, alt, pitch, roll, yaw, t_lat, t_lon)
+
+                # 5. Command the drone to fly to the calculated target
                 self.master.mav.set_position_target_global_int_send(
                     0, self.master.target_system, self.master.target_component,
                     mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
                     int(0b110111111000), target_lat_int, target_lon_int, self.takeoff_alt,
                     0, 0, 0, 0, 0, 0, 0, 0)
 
-            # 5. If we have a target, check how close we are
+            # 6. If we have a target, check how close we are
             if target_locked:
                 pos_msg = self.master.recv_match(type="GLOBAL_POSITION_INT", blocking=False)
                 if pos_msg:
