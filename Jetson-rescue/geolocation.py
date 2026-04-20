@@ -68,7 +68,8 @@ class TargetGeolocator:
 if __name__ == '__main__':
     # --- OFFLINE TESTING BLOCK ---
     print("Initializing Geolocator...")
-    geolocator = TargetGeolocator(res_w=1920, res_h=1080, hfov_deg=78.0, vfov_deg=43.0)
+    # Updated for ELP USB12MP02AF camera at 1080p
+    geolocator = TargetGeolocator(res_w=1920, res_h=1080, hfov_deg=65.0, vfov_deg=39.4)
     
     # Dummy Inputs: Target at center pixel, Drone level at 50m AGL heading North
     target_pixel_x = 1920 / 2
