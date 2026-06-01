@@ -102,7 +102,7 @@ class PackageDeliveryMission(MissionBase):
                         print("[DELIVERY] Below 6ft penalty ceiling! Actuating Servo.")
                         
                         # --- SERVO ACTUATION COMMAND ---
-                        servo_pin = 9 # <--- Change to Electrical's pin
+                        servo_pin = 6 # <--- Change to Electrical's pin
                         pwm_open = 1900 
                         self.master.mav.command_long_send(
                             self.master.target_system, self.master.target_component,

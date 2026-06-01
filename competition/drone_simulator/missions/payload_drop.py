@@ -99,7 +99,7 @@ class PayloadDropMission(MissionBase):
                         print("[PAYLOAD DROP] Target Reached! Initiating Drop Sequence.")
                         
                         # --- SERVO ACTUATION COMMAND ---
-                        servo_pin = 9 # <--- IMPORTANT: Change this 9 to whatever pin Electrical uses!
+                        servo_pin = 6 # <--- IMPORTANT: Change this 9 to whatever pin Electrical uses!
                         pwm_open = 1900 
                         
                         self.master.mav.command_long_send(
