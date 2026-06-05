@@ -13,7 +13,7 @@ class PackageDeliveryMission(MissionBase):
         super().__init__(master, config)
         self.desk_test = desk_test
         self.geolocator = TargetGeolocator(res_w=1920, res_h=1080, hfov_deg=65.0, vfov_deg=39.4)
-        self.vision = VisionPipeline(camera_index=0)
+        self.vision = VisionPipeline(camera_index=0, target_type='red_bullseye')
         self.logger = TelemetryLogger()
         self.drop_altitude = 1.5 # 1.5 meters (5 feet) to avoid the >6ft 0-point penalty
 
@@ -92,31 +92,28 @@ class PackageDeliveryMission(MissionBase):
                             int(0b110111111000), target_lat_int, target_lon_int, self.drop_altitude,
                             0, 0, 0, 0, 0, 0, 0, 0)
 
-                        # Wait until altitude physically drops below 1.8 meters (6 feet)
-                        while current_alt > 1.8:
-                            wait_msg = self.master.recv_match(type="GLOBAL_POSITION_INT", blocking=True)
-                            current_alt = wait_msg.relative_alt / 1000.0
-                            print(f"[DELIVERY] Descending... Current Alt: {current_alt:.2f}m")
+                        # Wait until altitude physically drops below 1.5 meters (safe margin under 6ft)
+                        while current_alt > 1.5:
+                            wait_msg = self.master.recv_match(type="GLOBAL_POSITION_INT", blocking=False)
+                            if wait_msg:
+                                current_alt = wait_msg.relative_alt / 1000.0
+                                print(f"[DELIVERY] Descending... Current Alt: {current_alt:.2f}m")
+                            
+                            # Keep the safety engine alive during the descent
+                            self.update_heartbeat()
+                            self.check_safety()
                             time.sleep(0.1)
 
-                        print("[DELIVERY] Below 6ft penalty ceiling! Actuating Servo.")
+                        print("[DELIVERY] Safely below 6ft penalty ceiling! Actuating Servo.")
                         
                         # --- SERVO ACTUATION COMMAND ---
-                        servo_pin = 6 # <--- Change to Electrical's pin
+                        servo_pin = 6 
                         pwm_open = 1900 
                         self.master.mav.command_long_send(
                             self.master.target_system, self.master.target_component,
                             mavutil.mavlink.MAV_CMD_DO_SET_SERVO,
                             0, servo_pin, pwm_open, 0, 0, 0, 0, 0
                         )
-                        
-                        print("[DELIVERY] Package Delivered. Climbing back to safe altitude.")
-                        self.master.mav.set_position_target_global_int_send(
-                            0, self.master.target_system, self.master.target_component,
-                            mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
-                            int(0b110111111000), target_lat_int, target_lon_int, self.takeoff_alt,
-                            0, 0, 0, 0, 0, 0, 0, 0)
-                        break
 
             self.update_heartbeat()
             self.check_safety()

@@ -17,7 +17,7 @@ class PayloadDropMission(MissionBase):
         # 1. Initialize math engine (Updated for ELP USB12MP02AF camera at 1080p)
         self.geolocator = TargetGeolocator(res_w=1920, res_h=1080, hfov_deg=65.0, vfov_deg=39.4)
         # 2. Initialize the vision pipeline
-        self.vision = VisionPipeline(camera_index=0)
+        self.vision = VisionPipeline(camera_index=0, target_type='red_bullseye')
         # 3. Initialize the logger 
         self.logger = TelemetryLogger()
 

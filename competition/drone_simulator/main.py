@@ -7,9 +7,10 @@ def main():
     print("1. Package Drop (130g Beanbag - Target > 6ft)")
     print("2. Package Delivery (1-2kg Cube - Target @ 5ft)")
     print("3. Object Localization (Black/White Squares - Target > 25ft)")
+    print("4. Circuit Time Trial (Max Speed Waypoints)")
     print("============================================")
     
-    choice = input("Select flight slot mission (1-3): ")
+    choice = input("Select flight slot mission (1-4): ")
     
     # --- TEST TOGGLE ---
     # Set to True for Wednesday's desk test (skips takeoff wait)
@@ -20,13 +21,14 @@ def main():
         from missions.payload_drop import PayloadDropMission
         mission_class = PayloadDropMission
     elif choice == '2':
-        # You will need to create this file next
         from missions.package_delivery import PackageDeliveryMission
         mission_class = PackageDeliveryMission
     elif choice == '3':
-        # You will need to create this file next
         from missions.object_localization import ObjectLocalizationMission
         mission_class = ObjectLocalizationMission
+    elif choice == '4':
+        from missions.circuit_trial import CircuitTimeTrialMission
+        mission_class = CircuitTimeTrialMission
     else:
         print("Invalid choice. Terminating.")
         sys.exit()
