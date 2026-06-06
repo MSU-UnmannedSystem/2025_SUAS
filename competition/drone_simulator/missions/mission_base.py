@@ -1,6 +1,7 @@
 from pymavlink import mavutil
 import time
 import threading
+import sys
 from vehicle.modes import change_mode, arm_drone
 from vehicle.upload import upload_waypoints
 
@@ -202,9 +203,11 @@ class MissionBase():
 
             if current_mode != self.expected_mode:
                 if current_mode in self.RC_OVERRIDE_MODES:
-                    # Pilot has taken control — log and wait, do not abort
-                    print(f"[BASE] RC override detected: mode={current_mode}. "
-                          f"Waiting for pilot to return control.")
+                    # FIX: Total script termination to ensure RC safety pilot has 100% control
+                    print(f"\n[CRITICAL] RC Pilot Takeover Detected! Mode Switched to: {current_mode}")
+                    print("[SAFEGUARD] Terminating companion computer guidance loop immediately.")
+                    self.active = False
+                    sys.exit(0)
                 else:
                     raise RuntimeError(
                         f"Unexpected mode change: expected={self.expected_mode}, "
@@ -219,7 +222,7 @@ class MissionBase():
         if msg:
             alt = msg.relative_alt / 1000.0
 
-            # FIX 3: Skip altitude floor check during landing/RTL descent
+            # Skip altitude floor check during landing/RTL descent
             if not self._landing and alt < self.min_alt:
                 raise RuntimeError(f"Altitude below minimum ({alt:.1f}m < {self.min_alt}m)")
 
