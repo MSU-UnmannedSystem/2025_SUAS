@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import math
 import threading
+import time
 
 class VisionPipeline:
     def __init__(self, camera_index=0, target_type='red_bullseye'):
@@ -29,6 +30,8 @@ class VisionPipeline:
                 with self.lock:
                     self.ret = ret
                     self.frame = frame
+            # FIX: Prevent thread starvation / CPU pegging on the Jetson
+            time.sleep(0.01)
 
     def get_target_pixel(self):
         """Safely pulls the newest frame and routes to the correct math engine."""
@@ -47,11 +50,21 @@ class VisionPipeline:
 
     def _find_red_bullseye(self, frame):
         """Mission: Package Drop & Package Delivery"""
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # FIX: Downsample immediately to eliminate compute bottleneck
+        orig_h, orig_w = frame.shape[:2]
+        proc_w, proc_h = 640, 480
+        resized = cv2.resize(frame, (proc_w, proc_h))
+
+        # FIX: Implement CLAHE to neutralize Mojave specular sun glare
+        hsv = cv2.cvtColor(resized, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        v_clahe = clahe.apply(v)
+        hsv_clahe = cv2.merge((h, s, v_clahe))
 
         # Red hue wraps around the HSV spectrum
-        mask1 = cv2.inRange(hsv, np.array([0, 120, 70]), np.array([10, 255, 255]))
-        mask2 = cv2.inRange(hsv, np.array([170, 120, 70]), np.array([180, 255, 255]))
+        mask1 = cv2.inRange(hsv_clahe, np.array([0, 120, 70]), np.array([10, 255, 255]))
+        mask2 = cv2.inRange(hsv_clahe, np.array([170, 120, 70]), np.array([180, 255, 255]))
         red_mask = mask1 + mask2
 
         # Cleanup noise
@@ -63,7 +76,7 @@ class VisionPipeline:
 
         for contour in contours:
             area = cv2.contourArea(contour)
-            if area < 500: continue
+            if area < 100: continue # Lowered threshold due to 640x480 scaling
             
             perimeter = cv2.arcLength(contour, True)
             if perimeter == 0: continue
@@ -72,7 +85,10 @@ class VisionPipeline:
             if 0.7 < circularity < 1.2:
                 M = cv2.moments(contour)
                 if M["m00"] != 0: 
-                    return int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
+                    px_x = int(M["m10"] / M["m00"])
+                    px_y = int(M["m01"] / M["m00"])
+                    # Scale coordinates back to native 1080p resolution for geolocation
+                    return int(px_x * (orig_w / proc_w)), int(px_y * (orig_h / proc_h))
         return None, None
 
     def _find_bw_square(self, frame):
@@ -89,11 +105,10 @@ class VisionPipeline:
 
         for contour in contours:
             area = cv2.contourArea(contour)
-            if area > 1000: # Slightly larger area filter to avoid ground noise
+            if area > 1000:
                 peri = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.04 * peri, True)
                 
-                # Check for exactly 4 vertices
                 if len(approx) == 4:
                     M = cv2.moments(contour)
                     if M["m00"] != 0: 

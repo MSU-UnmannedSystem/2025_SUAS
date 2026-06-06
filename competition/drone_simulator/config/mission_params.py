@@ -1,10 +1,24 @@
 def parameters():
     return {
-        "takeoff_alt": 3.5, # ~11.5 feet. Safe altitude for the 10-foot test.
-        "waypoints": [],    # Not needed for autonomous bullseye hunting
+        # --- ACTUAL COMPETITION FLIGHT PARAMS ---
+        "takeoff_alt": 16.0,  # 52.5 ft hard deck clearance
+        "max_alt": 60.0,      # High ceiling for safety margin
+        "min_alt": 0.5,       # Allowed to get very close to ground (landing logic overrides this)
+
+        # --- 10-FOOT TEST FLIGHT PARAMS (Commented Out) ---
+        # "takeoff_alt": 15.24,
+        # "max_alt": 16.76,  # 50 ft ceiling for testing
+
+        "waypoints": [
+            (35.049875, -118.150127, 50),
+            (35.050154, -118.149204, 150), 
+            (35.052716, -118.150231, 100),
+            (35.050101, -118.150687, 50),
+            (35.048860, -118.153033, 100),
+            (35.047553, -118.151674, 100), 
+            (35.048843, -118.151194, 50)
+        ],
         "time_limit": 600,
-        "max_alt": 15.0,    # Hard ceiling lowered to prevent flyaways
-        "min_alt": 1.0, 
         "end_mode": "RTL",
         "geofence": (35.04709, 35.05322, -118.15354, -118.14854)
     }
