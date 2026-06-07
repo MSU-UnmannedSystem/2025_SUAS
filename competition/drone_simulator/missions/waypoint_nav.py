@@ -113,7 +113,7 @@ if __name__ == "__main__":
     
     # 1. Map directly to your Windows Downloads folder
     DOWNLOADS_DIR = r"C:\Users\ishan\Downloads"
-    BIN_FILE_NAME = "00000017.BIN" 
+    BIN_FILE_NAME = "00000030.BIN" 
     
     BIN_FILE_PATH = os.path.join(DOWNLOADS_DIR, BIN_FILE_NAME)
     
