@@ -9,6 +9,8 @@ from pymavlink import mavutil
 from vehicle.connection import connect_vehicle
 from jetson_rescue.camera import VisionPipeline
 from vehicle.modes import change_mode
+from vehicle.upload import upload_waypoints
+from config.mission_params import parameters
 
 def run_table_test():
     print("\n=== MANUAL TABLE TEST (HARDWARE-IN-THE-LOOP) ===")
@@ -16,10 +18,20 @@ def run_table_test():
     # NOTE: Change to /dev/ttyTHS0 if ttyTHS1 throws a permission/not found error
     master = connect_vehicle("/dev/ttyTHS1", baud_rate=921600)
     vision = VisionPipeline(camera_index=0, target_type='red_bullseye')
+    config = parameters()
     
     cube_dropped = False
     ball_dropped = False
     target_lost_timer = None
+
+    # --- PHASE 0: WAYPOINT UPLOAD TEST ---
+    print("\n[PHASE 0] Testing MAVLink Waypoint Transfer...")
+    try:
+        upload_waypoints(master, config["waypoints"])
+        print(f"[SUCCESS] {len(config['waypoints'])} Competition Waypoints locked into Cube memory.")
+    except Exception as e:
+        print(f"[ERROR] Waypoint upload failed: {e}")
+        sys.exit(1)
 
     print("\n[READY] Hold the drone over the target. Monitoring telemetry...\n")
     
@@ -39,35 +51,31 @@ def run_table_test():
                     centered = True
                     target_lost_timer = None # Reset the panic timer when centered
 
-            # --- THE ACTIVE AUTO-FAILSAFE ---
+            # 4. The Active Auto-Failsafe (Vision Loss)
             if not centered:
                 if target_lost_timer is None:
                     target_lost_timer = time.time()
                 elif time.time() - target_lost_timer > 4.0:
                     print("\n\n[CRITICAL ERROR] Vision lock lost for 4 seconds!")
                     print("[AUTO-FAILSAFE] Forcing ArduPilot into LOITER mode...")
-                    
-                    # Command the Cube to switch modes
                     change_mode(master, "LOITER")
-                    
-                    print("[SAFEGUARD] Terminating companion computer guidance loop immediately.")
-                    print("-> PILOT HAS 100% MANUAL CONTROL.")
+                    print("[SAFEGUARD] Terminating companion computer loop immediately.")
                     vision.release()
                     sys.exit(0)
 
-            # 4. Print the Live HUD
+            # 5. Print the Live HUD
             print(f"| ALT: {alt:.2f}m | PIXEL: ({x}, {y}) | CENTERED: {centered} |", end='\r')
 
-            # 5. The Floor Test (Simulating Phase 1 Cube Drop at 0.5m)
+            # 6. The Floor Test (Simulating Phase 1 Cube Drop at 0.5m)
             if centered and alt < 0.5 and not cube_dropped:
                 print(f"\n\n[TRIGGER] Cube condition met (Alt < 0.5m). Actuating Pin 6 (1900 PWM)...")
                 master.mav.command_long_send(master.target_system, master.target_component, 
                                              mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0, 6, 1900, 0, 0, 0, 0, 0)
                 cube_dropped = True
-                target_lost_timer = None # Reset to prevent false trips during sleep
+                target_lost_timer = None 
                 time.sleep(2) 
 
-            # 6. The Ceiling Test (Simulating Phase 2 Ball Drop at 1.5m)
+            # 7. The Ceiling Test (Simulating Phase 2 Ball Drop at 1.5m)
             if centered and alt > 1.5 and not ball_dropped:
                 print(f"\n\n[TRIGGER] Ball condition met (Alt > 1.5m). Actuating Pin 7 (1900 PWM)...")
                 master.mav.command_long_send(master.target_system, master.target_component, 
@@ -78,8 +86,40 @@ def run_table_test():
 
             time.sleep(0.1)
 
-        print("\n\n[SUCCESS] Both payload drops completed successfully.")
+        # --- PHASE 3: THE AUTO HANDOFF TEST ---
+        print("\n\n=== PHASE 3: WAYPOINT HANDOFF TEST ===")
+        print("Payloads dropped. Jetson is commanding ArduPilot to enter AUTO mode...")
+        change_mode(master, "AUTO")
+        time.sleep(2) # Give FC time to process the mode change
         
+        hb = master.recv_match(type="HEARTBEAT", blocking=True, timeout=2)
+        if hb:
+            current_mode = mavutil.mode_string_v10(hb)
+            print(f"[VERIFY] ArduPilot is currently in: {current_mode} mode.")
+            if current_mode == "AUTO":
+                print("[SUCCESS] Waypoint logic verified! ArduPilot accepted the route.")
+            else:
+                print("[WARNING] ArduPilot rejected AUTO mode. (This is normal indoors without a 3D GPS lock).")
+
+        # --- PHASE 4: THE RC OVERRIDE TEST ---
+        print("\n=== PHASE 4: FAILSAFE OVERRIDE TEST ===")
+        print("-> SAFETY PILOT: Flip your flight mode switch to LOITER now!")
+        
+        while True:
+            hb = master.recv_match(type="HEARTBEAT", blocking=False)
+            if hb:
+                current_mode = mavutil.mode_string_v10(hb)
+                print(f"Waiting for override... Current Mode: {current_mode}        ", end='\r')
+                
+                if current_mode == "LOITER":
+                    print(f"\n\n[CRITICAL] RC Pilot Takeover Detected! Mode Switched to: {current_mode}")
+                    print("[SAFEGUARD] Terminating companion computer loop immediately.")
+                    print("-> PILOT HAS 100% MANUAL CONTROL.")
+                    vision.release()
+                    sys.exit(0)
+            
+            time.sleep(0.2)
+
     except KeyboardInterrupt:
         vision.release()
         print("\n\n[SHUTDOWN] Test terminated safely by user.")
