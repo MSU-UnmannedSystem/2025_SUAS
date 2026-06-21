@@ -1,8 +1,23 @@
-# Ignore virtual environment
+# ========================
+# PYTHON & ENVIRONMENTS
+# ========================
 venv/
 venv_old/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Ignore all images
+# ========================
+# LOGS & TEMP FILES
+# ========================
+*.log
+*.tmp
+*.swp
+
+# ========================
+# IMAGES & MEDIA
+# ========================
 *.png
 *.jpg
 *.jpeg
@@ -14,13 +29,16 @@ venv_old/
 *.heic
 *.svg
 
-# Ignore Python cache files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# ========================
+# C-UASC FORENSICS & MODELS
+# ========================
+# Ignore all generated judge CSVs and summaries
+outputs/
 
-# Ignore temp and log files
-*.log
-*.tmp
-*.swp
+# Ignore massive ArduPilot telemetry logs
+*.BIN
+
+# Ignore compiled YOLO and TensorRT models
+*.pt
+*.engine
+*.onnx
