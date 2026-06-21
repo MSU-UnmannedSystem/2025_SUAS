@@ -1,4 +1,4 @@
-from Logger import TelemetryLogger
+from legacy_flight_architecture.listener.Logger import TelemetryLogger
 import time
 
 print("Initializing Logger...")

@@ -6,11 +6,11 @@ import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pymavlink import mavutil
-from vehicle.connection import connect_vehicle
-from jetson_rescue.camera import VisionPipeline
-from vehicle.modes import change_mode
-from vehicle.upload import upload_waypoints
-from config.mission_params import parameters
+from competition.drone_simulator.vehicle.connection import connect_vehicle
+from competition.jetson_rescue.camera import VisionPipeline
+from competition.drone_simulator.vehicle.modes import change_mode
+from competition.drone_simulator.vehicle.upload import upload_waypoints
+from competition.drone_simulator.config.mission_params import parameters
 
 def run_table_test():
     print("\n=== MANUAL TABLE TEST (HARDWARE-IN-THE-LOOP) ===")

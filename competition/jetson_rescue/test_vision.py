@@ -1,4 +1,4 @@
-from camera import VisionPipeline
+from competition.jetson_rescue.camera import VisionPipeline
 import time
 
 def run_test():

@@ -2,8 +2,8 @@ from pymavlink import mavutil
 import time
 import threading
 import sys
-from vehicle.modes import change_mode, arm_drone
-from vehicle.upload import upload_waypoints
+from competition.drone_simulator.vehicle.modes import change_mode, arm_drone
+from competition.drone_simulator.vehicle.upload import upload_waypoints
 
 class HeartbeatThread(threading.Thread):
     """

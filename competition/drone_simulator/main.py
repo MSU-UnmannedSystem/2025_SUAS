@@ -7,13 +7,13 @@ import math
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pymavlink import mavutil
-from vehicle.connection import connect_vehicle
-from vehicle.modes import change_mode
-from config.mission_params import parameters
-from missions.mission_base import MissionBase
+from competition.drone_simulator.vehicle.connection import connect_vehicle
+from competition.drone_simulator.vehicle.modes import change_mode
+from competition.drone_simulator.config.mission_params import parameters
+from competition.drone_simulator.missions.mission_base import MissionBase
 
-from jetson_rescue.geolocation import TargetGeolocator
-from jetson_rescue.camera import VisionPipeline
+from competition.jetson_rescue.geolocation import TargetGeolocator
+from competition.jetson_rescue.camera import VisionPipeline
 from listener.Logger import TelemetryLogger
 
 # ==========================================

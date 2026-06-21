@@ -1,8 +1,8 @@
 from pymavlink import mavutil
 import time
 import csv
-from missions.mission_base import MissionBase
-from jetson_rescue.geolocation import TargetGeolocator
+from competition.drone_simulator.missions.mission_base import MissionBase
+from competition.jetson_rescue.geolocation import TargetGeolocator
 from inference.camera import VisionPipeline
 
 class ObjectLocalizationMission(MissionBase):
@@ -27,7 +27,7 @@ class ObjectLocalizationMission(MissionBase):
         if self.desk_test:
             print("[LOCALIZATION] DESK TEST MODE: Skipping physical takeoff wait.")
             self.set_expected_mode("AUTO")
-            from vehicle.modes import arm_drone
+            from competition.drone_simulator.vehicle.modes import arm_drone
             arm_drone(self.master)
             time.sleep(2)
         else:
@@ -36,7 +36,7 @@ class ObjectLocalizationMission(MissionBase):
     def execute(self):
         print("[LOCALIZATION] Entering Passive Monitoring. Drone is flying AUTO path.")
         if not self.desk_test:
-            from vehicle.modes import change_mode
+            from competition.drone_simulator.vehicle.modes import change_mode
             change_mode(self.master, "AUTO")
         self.set_expected_mode("AUTO")
 

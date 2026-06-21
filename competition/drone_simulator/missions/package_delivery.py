@@ -1,12 +1,12 @@
 from pymavlink import mavutil
 import time
 import math
-from missions.mission_base import MissionBase
-from vehicle.modes import change_mode
+from competition.drone_simulator.missions.mission_base import MissionBase
+from competition.drone_simulator.vehicle.modes import change_mode
 
 # PATHING FIX: Direct import from jetson_rescue
-from jetson_rescue.geolocation import TargetGeolocator
-from jetson_rescue.camera import VisionPipeline
+from competition.jetson_rescue.geolocation import TargetGeolocator
+from competition.jetson_rescue.camera import VisionPipeline
 from listener.Logger import TelemetryLogger
 
 class PackageDeliveryMission(MissionBase):
@@ -25,7 +25,7 @@ class PackageDeliveryMission(MissionBase):
             print("[DELIVERY] DESK TEST MODE: Props disabled. Bypassing climb.")
             change_mode(self.master, "GUIDED")
             self.set_expected_mode("GUIDED")
-            from vehicle.modes import arm_drone
+            from competition.drone_simulator.vehicle.modes import arm_drone
             arm_drone(self.master)
             time.sleep(2)
         else:
