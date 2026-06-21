@@ -24,10 +24,11 @@ With a highly consistent performance across all operational categories, the team
 
 ### Flight Documentation & Leaderboards
 Visual proof of flight metrics, telemetry configurations, and official standings tables are archived directly within the repository root:
-* results_images/package_delivery.png
-* results_images/time_trial_results.png
-* results_images/waypoint_nav_results.png
-* results_images/payload_drop.png
+
+![Package Delivery](results_images/package_delivery.png)
+![Time Trial](results_images/time_trial_results.png)
+![Waypoint Navigation](results_images/waypoint_nav_results.png)
+![Payload Drop](results_images/payload_drop.png)
 
 ---
 
